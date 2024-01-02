@@ -1,6 +1,6 @@
-mod lib;
+mod handlers;
 use actix_cors::Cors;
-use actix_web::{web, http, App, HttpServer};
+use actix_web::{http, web, App, HttpServer};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -11,10 +11,10 @@ async fn main() -> std::io::Result<()> {
             .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
             .allowed_header(http::header::CONTENT_TYPE)
             .max_age(3600);
-        
-        App::new()
-            .wrap(cors)
-            .service(web::resource("/run/{language}").route(web::post().to(lib::compilers::run_code)))
+
+        App::new().wrap(cors).service(
+            web::resource("/run/{language}").route(web::post().to(handlers::compilers::run_code)),
+        )
     })
     .bind("127.0.0.1:8080")?
     .run()
